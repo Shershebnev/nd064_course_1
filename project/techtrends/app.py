@@ -1,12 +1,19 @@
+import logging
 import sqlite3
+import sys
 
 from flask import Flask, jsonify, json, render_template, request, url_for, redirect, flash
 from werkzeug.exceptions import abort
 
+
+connection_count = 0
+
 # Function to get a database connection.
 # This function connects to database with the name `database.db`
 def get_db_connection():
+    global connection_count
     connection = sqlite3.connect('database.db')
+    connection_count += 1
     connection.row_factory = sqlite3.Row
     return connection
 
@@ -14,9 +21,16 @@ def get_db_connection():
 def get_post(post_id):
     connection = get_db_connection()
     post = connection.execute('SELECT * FROM posts WHERE id = ?',
-                        (post_id,)).fetchone()
+                              (post_id,)).fetchone()
     connection.close()
     return post
+
+
+def get_post_count():
+    connection = get_db_connection()
+    post_count = connection.execute("SELECT COUNT(id) FROM posts").fetchone()
+    connection.close()
+    return post_count
 
 # Define the Flask application
 app = Flask(__name__)
@@ -36,13 +50,16 @@ def index():
 def post(post_id):
     post = get_post(post_id)
     if post is None:
-      return render_template('404.html'), 404
+        app.logger.info("Requested non-existing article, 404 page is returned")
+        return render_template('404.html'), 404
     else:
-      return render_template('post.html', post=post)
+        app.logger.info(f"Requested {post['title']} article")
+        return render_template('post.html', post=post)
 
 # Define the About Us page
 @app.route('/about')
 def about():
+    app.logger.info("Requested About Us page")
     return render_template('about.html')
 
 # Define the post creation functionality 
@@ -57,14 +74,29 @@ def create():
         else:
             connection = get_db_connection()
             connection.execute('INSERT INTO posts (title, content) VALUES (?, ?)',
-                         (title, content))
+                               (title, content))
             connection.commit()
             connection.close()
-
+            app.logger.info(f"Created new article - {title}")
             return redirect(url_for('index'))
 
     return render_template('create.html')
 
+
+@app.route("/healthz")
+def healthz():
+    return app.response_class(response=json.dumps({"result": "OK - healthy"}), status=200, mimetype="application/json")
+
+
+@app.route("/metrics")
+def metrics():
+    app.response_class(response=json.dumps({"db_connection_count": connection_count, "post_count": get_post_count()}),
+                       status=200, mimetype="application/json")
+
+
 # start the application on port 3111
 if __name__ == "__main__":
-   app.run(host='0.0.0.0', port='3111')
+    logging.basicConfig(handlers=[logging.StreamHandler(sys.stdout), logging.StreamHandler(sys.stderr)],
+                        format="%(asctime)s %(message)s",
+                        level=logging.DEBUG)
+    app.run(host='0.0.0.0', port='3111')

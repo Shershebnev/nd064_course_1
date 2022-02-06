@@ -1,11 +1,36 @@
 ## Docker commands used to build the application 
 # TODO: insert the docker build command
-
+docker build -t techtrends techtrends
 ## Docker commands used to run the application
 # TODO: insert the docker run command
-
+docker run -d -p 7111:3111 techtrends
 ## Docker commands used to get the application logs
 # TODO: insert the docker logs command
-
+docker logs -f `docker ps -q --filter "ancestor=techtrends"`
 ## Logs from the container running the TechTrends application
 # TODO: paste logs from the Docker container 
+ * Serving Flask app "app" (lazy loading)
+ * Environment: production
+   WARNING: This is a development server. Do not use it in a production deployment.
+   Use a production WSGI server instead.
+ * Debug mode: off
+2022-02-06 14:21:56,518  * Running on http://0.0.0.0:3111/ (Press CTRL+C to quit)
+2022-02-06 14:21:56,518  * Running on http://0.0.0.0:3111/ (Press CTRL+C to quit)
+2022-02-06 14:22:09,115 172.17.0.1 - - [06/Feb/2022 14:22:09] "GET / HTTP/1.1" 200 -
+2022-02-06 14:22:09,115 172.17.0.1 - - [06/Feb/2022 14:22:09] "GET / HTTP/1.1" 200 -
+2022-02-06 14:22:10,609 Requested 2020 CNCF Annual Report article
+2022-02-06 14:22:10,609 Requested 2020 CNCF Annual Report article
+2022-02-06 14:22:10,612 172.17.0.1 - - [06/Feb/2022 14:22:10] "GET /1 HTTP/1.1" 200 -
+2022-02-06 14:22:10,612 172.17.0.1 - - [06/Feb/2022 14:22:10] "GET /1 HTTP/1.1" 200 -
+2022-02-06 14:22:13,085 Requested About Us page
+2022-02-06 14:22:13,085 Requested About Us page
+2022-02-06 14:22:13,088 172.17.0.1 - - [06/Feb/2022 14:22:13] "GET /about HTTP/1.1" 200 -
+2022-02-06 14:22:13,088 172.17.0.1 - - [06/Feb/2022 14:22:13] "GET /about HTTP/1.1" 200 -
+2022-02-06 14:22:13,150 172.17.0.1 - - [06/Feb/2022 14:22:13] "GET /favicon.ico HTTP/1.1" 404 -
+2022-02-06 14:22:13,150 172.17.0.1 - - [06/Feb/2022 14:22:13] "GET /favicon.ico HTTP/1.1" 404 -
+2022-02-06 14:22:18,258 Requested non-existing article, 404 page is returned
+2022-02-06 14:22:18,258 Requested non-existing article, 404 page is returned
+2022-02-06 14:22:18,261 172.17.0.1 - - [06/Feb/2022 14:22:18] "GET /13 HTTP/1.1" 404 -
+2022-02-06 14:22:18,261 172.17.0.1 - - [06/Feb/2022 14:22:18] "GET /13 HTTP/1.1" 404 -
+2022-02-06 14:22:18,332 172.17.0.1 - - [06/Feb/2022 14:22:18] "GET /favicon.ico HTTP/1.1" 404 -
+2022-02-06 14:22:18,332 172.17.0.1 - - [06/Feb/2022 14:22:18] "GET /favicon.ico HTTP/1.1" 404 -
