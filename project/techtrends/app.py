@@ -30,7 +30,7 @@ def get_post_count():
     connection = get_db_connection()
     post_count = connection.execute("SELECT COUNT(id) FROM posts").fetchone()
     connection.close()
-    return post_count
+    return post_count["COUNT(id)"]
 
 # Define the Flask application
 app = Flask(__name__)
@@ -90,8 +90,9 @@ def healthz():
 
 @app.route("/metrics")
 def metrics():
-    app.response_class(response=json.dumps({"db_connection_count": connection_count, "post_count": get_post_count()}),
-                       status=200, mimetype="application/json")
+    return app.response_class(response=json.dumps({"db_connection_count": connection_count,
+                                                   "post_count": get_post_count()}), status=200,
+                              mimetype="application/json")
 
 
 # start the application on port 3111
